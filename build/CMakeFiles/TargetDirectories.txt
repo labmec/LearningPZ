@@ -1,4 +1,0 @@
-/home/labmec/Desktop/Vinicius_IC/Programming/LearningPZ/build/CMakeFiles/GlobalFiles.dir
-/home/labmec/Desktop/Vinicius_IC/Programming/LearningPZ/build/CMakeFiles/pztest.dir
-/home/labmec/Desktop/Vinicius_IC/Programming/LearningPZ/build/CMakeFiles/edit_cache.dir
-/home/labmec/Desktop/Vinicius_IC/Programming/LearningPZ/build/CMakeFiles/rebuild_cache.dir

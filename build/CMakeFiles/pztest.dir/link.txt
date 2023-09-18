@@ -1,1 +1,0 @@
-/usr/bin/g++ -g CMakeFiles/pztest.dir/pztest.cpp.o -o pztest  -Wl,-rpath,/home/labmec/Desktop/Vinicius_IC/Programming/neopz_install/pz/lib /home/labmec/Desktop/Vinicius_IC/Programming/neopz_install/pz/lib/libpz.so 
