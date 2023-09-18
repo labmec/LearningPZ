@@ -29,6 +29,8 @@
 #include "TPZRefPatternTools.h"
 
 enum EMatid {ENone,EDomain,EBC};
+// enum: é um tipo de variável que seleciona um intervalo de valores;
+// EMatid:
 const int global_nthread = 16;
 
 
@@ -44,8 +46,11 @@ void PrintResults(TPZLinearAnalysis &an, TPZCompMesh *cmesh);
 int main() {
     
     std::cout << "--------- Starting simulation ---------" << std::endl;
+    //Imprime uma linha falando que a simulação se iniciou
     const int pord = 1;
+    //declara a constante pord, utilizada para
     int ndiv = 2;
+    //declara a constante ndiv, utilizada para a função CreateGMesh que armazena a memória de TPZGeoMesh
     TPZGeoMesh* gmesh = CreateGMesh(ndiv);
         
     std::ofstream out("gmesh.vtk");
@@ -59,9 +64,7 @@ int main() {
     
     TPZLinearAnalysis an(cmeshH1);
     SolveProblemDirect(an,cmeshH1);
-    
-    // Post Process
-    std::cout << "--------- PostProcess ---------" << std::endl;
+    //declara a constante pord, utilizada paras ---------" << std::endl;
     PrintResults(an,cmeshH1);
     
     // deleting stuff
@@ -69,17 +72,19 @@ int main() {
     delete gmesh;
         
     std::cout << "--------- Simulation finished ---------" << std::endl;
-}
+}pord
 
 TPZGeoMesh* CreateGMesh(int ndiv) {
+    //A função CreateGMesh serve para criar um endereço da memória onde o TPZGeoMesh está armazenado, a partir de um inteiro ndiv.
     TPZGeoMesh* gmesh = new TPZGeoMesh;
-    
+    // o gmesh armazena a memória onde o TPZGeoMesh está armazenado, servindo como um ponteiro para este objeto.
     MMeshType meshType = MMeshType::EHexahedral;
     int dim = 3;
-    
+    //declara a constante dim, utilizada para
     TPZManVector<REAL,3> minX = {-1,-1,-1};
     TPZManVector<REAL,3> maxX = {1,1,1};
     int nMats = 2*dim+1;
+    //declara a constante nMats, definida por (2*dim+1), utilizada para
     
     constexpr bool createBoundEls{true};
     TPZVec<int> matIds(nMats,EBC);
