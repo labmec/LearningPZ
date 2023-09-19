@@ -29,8 +29,6 @@
 #include "TPZRefPatternTools.h"
 
 enum EMatid {ENone,EDomain,EBC};
-// enum: é um tipo de variável que seleciona um intervalo de valores;
-// EMatid:
 const int global_nthread = 16;
 
 
@@ -46,15 +44,19 @@ void PrintResults(TPZLinearAnalysis &an, TPZCompMesh *cmesh);
 int main() {
     
     std::cout << "--------- Starting simulation ---------" << std::endl;
-    //Imprime uma linha falando que a simulação se iniciou
+    //printa o texto "--------- Starting simulation ---------", indicando que a simulação está se iniciando.
     const int pord = 1;
-    //declara a constante pord, utilizada para
+    //é declarada a constante pord, cujo valor inteiro atribuído é 1.
     int ndiv = 2;
-    //declara a constante ndiv, utilizada para a função CreateGMesh que armazena a memória de TPZGeoMesh
+    //é declarada a variável ndiv (representa o número de divisões de cada uma das dimensões da malha), cujo valor inteiro atribuído é 2.
     TPZGeoMesh* gmesh = CreateGMesh(ndiv);
-        
+    //criação da váriável gmesh (geometric mesh) cujo valor será um ponteiro de um objeto da classe TPZGeoMesh, atribuído através da função CreateGMesh(ndiv), que recebe o valor de ndiv como entrada. 
+    //o que ocorre na função está detalhado mais a frente no código.    
     std::ofstream out("gmesh.vtk");
+    //a variável out está sendo declarada como pertencente à classe std::ofstream (usada para lidar com arquivos de saída). o nome do arquivo que será aberto para escrita é "gmesh.vtk". 
     TPZVTKGeoMesh::PrintGMeshVTK(gmesh, out);
+    //está sendo chamada a função PrintGMeshVTK da classe TPZVTKGeoMesh, cujos argumentos são "gmesh" e "out".
+    //essa função formata os dados da malha geométrica "gmesh" para o formato VTK e os escreve no objeto "out", que representa o arquivo "gmesh.vtk"
 
     TElasticity3DAnalytic *elas = new TElasticity3DAnalytic;
     elas->fE = 250.;//206.8150271873455;
@@ -64,7 +66,9 @@ int main() {
     
     TPZLinearAnalysis an(cmeshH1);
     SolveProblemDirect(an,cmeshH1);
-    //declara a constante pord, utilizada paras ---------" << std::endl;
+    
+    // Post Process
+    std::cout << "--------- PostProcess ---------" << std::endl;
     PrintResults(an,cmeshH1);
     
     // deleting stuff
@@ -72,28 +76,39 @@ int main() {
     delete gmesh;
         
     std::cout << "--------- Simulation finished ---------" << std::endl;
-}pord
+}
 
 TPZGeoMesh* CreateGMesh(int ndiv) {
-    //A função CreateGMesh serve para criar um endereço da memória onde o TPZGeoMesh está armazenado, a partir de um inteiro ndiv.
+    //está sendo definida a função CreateGMesh que retornará um ponteiro para um objeto da classe TPZGeoMesh, a função recebe o argumento inteiro "ndiv".
     TPZGeoMesh* gmesh = new TPZGeoMesh;
-    // o gmesh armazena a memória onde o TPZGeoMesh está armazenado, servindo como um ponteiro para este objeto.
+    //gmesh é o endereço de um novo objeto criado pertencente à classe TPZGeoMesh.
+    
     MMeshType meshType = MMeshType::EHexahedral;
+    //a variável meshType está recebendo o valor EHexahedral, indicando que os elementos da malha serão hexaédricos (cubos - 6 faces).
     int dim = 3;
-    //declara a constante dim, utilizada para
+    //variável "dim" é definida com valor inteiro 3 indicando que a malha será tridimensional.
     TPZManVector<REAL,3> minX = {-1,-1,-1};
     TPZManVector<REAL,3> maxX = {1,1,1};
+    //Ambos os vetores "minX" e "maxX" possuem 3 elementos que indicam as coordenadas máximas e mínimas, respectivamente, da malha geométrica em cada uma das 3 dimensões.
+    //Nesse caso, a caixa da malha geométrica vai de -1 a 1 nas 3 dimensões.
+    //TPZManVector é uma classe utilizada para criar vetores desse tipo.
     int nMats = 2*dim+1;
-    //declara a constante nMats, definida por (2*dim+1), utilizada para
+    // número de materiais talvez.
     
     constexpr bool createBoundEls{true};
+    //é atribuído "true" à váriavel booleana "createBoundEls", indicando provavelmente que condições de contorno serão inseridas na malha.
     TPZVec<int> matIds(nMats,EBC);
+    //é criado o vetor inteiro matIds com "nMats" elemento(s) cujos valores serão todos "EBC".
     matIds[0] = EDomain;
+    //o primeiro elemento (índice 0) do vetor matIds está sendo definido como Edomain.
     
     TPZManVector<int,3> ndivvec = {ndiv,ndiv,ndiv};
+    //é criado o vetor inteiro ndivvec com 3 elementos, todos com valor ndiv, indicando que cada uma das 3 dimensões da malha será dividida em ndiv (nesse caso 2) partes, ou seja, 2 elementos.
     gmesh = TPZGeoMeshTools::CreateGeoMeshOnGrid(dim, minX, maxX,matIds, ndivvec, meshType,createBoundEls);
-    
+    //é chamada a função CreateGeoMeshOnGrid para criar finalmente a malha geométrica com os parâmetros específicados anteriormente. o resultado é atribuído à variável gmesh.
+
     return gmesh;
+    //a função retorna o ponteiro gmesh que aponta para a malha criada.
 }
 
 
