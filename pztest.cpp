@@ -185,8 +185,8 @@ TPZCompMesh* CreateH1CMesh(TPZGeoMesh* gmesh, const int pord, TElasticity3DAnaly
 
 void SolveProblemDirect(TPZLinearAnalysis &an, TPZCompMesh *cmesh)
 // Declara a função SolveProblemDirect do tipo void (logo não retornará valor), com os seguintes parâmetros:
-//TPZLinearAnalysis &an, cuja sintaxe demonstra ser uma referência ao TPZLinearAnalysis
-//TPZCompMesh *cmesh, cuja sintaxe é
+//TPZLinearAnalysis &an, cuja sintaxe demonstra ser uma referência ao TPZLinearAnalysis chamada de an, a fim de se relacionar ao valor original, e não uma cópia dele.
+//TPZCompMesh *cmesh, cuja sintaxe é a de um pointer (chamado cmesh) relacionado a TPZCompMesh
 {
 
     TPZSkylineStructMatrix<STATE> matskl(cmesh);
