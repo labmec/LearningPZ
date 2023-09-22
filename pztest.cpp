@@ -57,7 +57,7 @@ int main() {
     std::cout << "--------- Starting simulation ---------" << std::endl;
     //printa o texto "--------- Starting simulation ---------", indicando que a simulação está se iniciando.
     const int pord = 1;
-    //é declarada a constante pord, cujo valor inteiro atribuído é 1.
+    //é declarada a constante pord, cujo valor inteiro atribuído é 1. essa variável provavelmente representa o grau dos polinômios usados para aproximar a solução dentro dos elementos finitos.
     int ndiv = 2;
     //é declarada a variável ndiv (representa o número de divisões de cada uma das dimensões da malha), cujo valor inteiro atribuído é 2.
     TPZGeoMesh* gmesh = CreateGMesh(ndiv);
@@ -70,16 +70,18 @@ int main() {
     //essa função formata os dados da malha geométrica "gmesh" para o formato VTK e os escreve no objeto "out", que representa o arquivo "gmesh.vtk"
 
     TElasticity3DAnalytic *elas = new TElasticity3DAnalytic;
-// Associa uma forma de armazenar o local de memória de TElasticity3DAnalytic denominado "elas", em um novo objeto, devido ao operador new
+    //Uma variável chamada elas é declarada como um ponteiro para um objeto da classe TElasticity3DAnalytic. Em seguida, é criada uma instância dessa classe usando o operador new e o endereço do objeto é atribuído à variável elas.
+    //TElasticity3DAnalytic é relacionada ao problema de elasticidade.
     elas->fE = 250.;//206.8150271873455;
-//Define o valor da variável fE, pertencente ao objeto cujo pointer é elas (que, pelo código, aparenta ser TElasticity3DAnaçytic), para 250 e, provavelmente, antes era para 206.8150271873455 e tal valor foi alterado para um comentário. 
+    //Define o valor do atributo fE, pertencente ao objeto cujo pointer é elas, para 250, provavelmente antes era para 206.8150271873455 e tal valor foi alterado.
     elas->fPoisson = 0.;
-//Define o valor de fPoisson, pertencente a TElasticity3DAnalytic devido ao pointer "elas", para 0.
+    //Define o valor de fPoisson (outro atributo do objeto) para 0. (float)
     elas->fProblemType = TElasticity3DAnalytic::EStretchx;
-//Essa linha é relacionada ao valor de fProblemType, pertencente a TElasticity3DAnalytic devido ao pointer "elas". Desse modo, ele define um valor do tipo enum para a variável trabalhada.
+    //fProblemType recebe TElasticity3DAnalytic::EStretchx, um valor do tipo enum associado ao problema de elasticidade.
     TPZCompMesh* cmeshH1 = CreateH1CMesh(gmesh,pord,elas);
-// Define o pointer chamado cmeshH1 relacionado a classe TPZCompMesh, associando-o a função CreateH1CMesh, cujos parâmetros (já antes trabalhados) são: gmesh ,pord,elas.
-    
+    // Define o pointer chamado cmeshH1 relacionado à classe TPZCompMesh, associando-o a função CreateH1CMesh, cujos parâmetros (já antes declarados) são: gmesh, pord, elas.
+    //
+
     TPZLinearAnalysis an(cmeshH1);
 // Nesse caso, a adição do termo "an" significa que estamos criando um objeto da classe "TPZLinearAnalysis", cujo nome é "an", e tal sintaxe é a de um constructor, inicializando com o objeto "an" com o argumento cmeshH1.
     SolveProblemDirect(an,cmeshH1);
@@ -135,30 +137,32 @@ TPZGeoMesh* CreateGMesh(int ndiv) {
 
 
 TPZCompMesh* CreateH1CMesh(TPZGeoMesh* gmesh, const int pord, TElasticity3DAnalytic *elas) {
-// Cria a função CreateH1CMesh que retornará um pointer associado a classe TPZCompMesh, que aceita os seguintes parâmetros: TPZGeoMesh* gmesh, const int pord, TElasticity3DAnalytic *elas.
+    // Cria a função CreateH1CMesh que retornará um pointer associado a classe TPZCompMesh, que aceita os seguintes parâmetros: TPZGeoMesh* gmesh, const int pord, TElasticity3DAnalytic *elas.
 
     TPZCompMesh* cmesh = new TPZCompMesh(gmesh);
-//
+    //Cria um objeto da classe TPZCompMesh chamado cmesh e o inicializa com a malha geométrica gmesh.
     const int dim = gmesh->Dimension();
-//
+    //Determina a dimensão do modelo (dim, uma constante) com base na dimensão da malha geométrica gmesh através do método Dimension() do objeto gmesh.
     cmesh->SetDimModel(dim);
+    //configurando a dimensão do modelo na malha computacional cmesh com base no valor da variável dim. o método SetDimModel() foi chamado para definir a dimensão do modelo para a malha computacional.
     cmesh->SetDefaultOrder(pord);
+    //chama o método SetDefaultOrder() para configurar a ordem a ser utilizada na aproximação dos elementos finitos da malha.
     cmesh->SetAllCreateFunctionsContinuous();
-// Essas sintaxes tem a função de "chamar" o pointer cmesh de modo a acessar membros pertencentes a ele e associar a diferentes funções, explicitadas acima, cada uma contendo um argumento refente a seu próprio código.
+    // Essas sintaxes tem a função de "chamar" o pointer cmesh de modo a acessar membros pertencentes a ele e associar a diferentes funções, explicitadas acima, cada uma contendo um argumento refente a seu próprio código.
     
     // Domain elas mat
     const STATE E = elas->fE, nu = elas->fPoisson;
-//
+    //
     TPZManVector<STATE> force = {0,0,0};
-//
+    //
     TPZElasticity3D *mat = new TPZElasticity3D(EDomain, E, nu, force, 0., 0., 0.);
-//
+    //
     mat->SetExactSol(elas->ExactSolution(), 2);
-//
+    //
     mat->SetForcingFunction(elas->ForceFunc(), 4);
-//
+    //
     cmesh->InsertMaterialObject(mat);
-//
+    //
     
     // BC null mat
     TPZFMatrix<STATE> val1(3,3,0.);
