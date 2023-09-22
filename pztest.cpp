@@ -148,7 +148,7 @@ TPZCompMesh* CreateH1CMesh(TPZGeoMesh* gmesh, const int pord, TElasticity3DAnaly
     cmesh->SetDefaultOrder(pord);
     //chama o método SetDefaultOrder() para configurar a ordem a ser utilizada na aproximação dos elementos finitos da malha.
     cmesh->SetAllCreateFunctionsContinuous();
-    // Essas sintaxes tem a função de "chamar" o pointer cmesh de modo a acessar membros pertencentes a ele e associar a diferentes funções, explicitadas acima, cada uma contendo um argumento refente a seu próprio código.
+    //o método SetAllCreateFunctionsContinuous() é chamado para configurar as funções de base a serem utilizadas na resolução do problema.
     
     // Domain elas mat
     const STATE E = elas->fE, nu = elas->fPoisson;
