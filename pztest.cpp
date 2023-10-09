@@ -31,26 +31,30 @@
 enum EMatid {ENone,EDomain,EBC};
 //Cria a classe EMatid, que é do tipo enum, isso significa que ENone, EDomain e EBC são variáveis que não podem ter seu valor alterado diretamente, preservando-as em seu estado original relacionado a classe enum.
 const int global_nthread = 16;
-// Determina o valor máximo de threads para o matskl.SetNumThreads, isto é, 16.
+//define uma constante chamada global_nthread com o valor 16. Essa constante provavelmente é usada para controlar o número de threads usadas em operações de paralelismo, como na montagem da matriz estrutural ou no pós-processamento.
 
 TPZGeoMesh* CreateGMesh(int ndiv);
-// Define a função CreateGMesh, que recebe um valor inteiro ndiv que é retornado como um pointer a TPZGeoMesh.
+//define a função CreateGMesh, que recebe um valor inteiro ndiv que é retornado como um pointer a TPZGeoMesh.
+//função que cria e retorna uma malha geométrica com base no número de divisões ndiv.
 TPZGeoMesh* ReadMeshFromGmsh(std::string file_name);
-// Analogamente, // Define a função ReadMeshFromGmsh, que recebe uma string relacionada ao nome de um arquivo, que é retornado como um pointer a TPZGeoMesh.
+//Analogamente, // Define a função ReadMeshFromGmsh, que recebe uma string relacionada ao nome de um arquivo, que é retornado como um pointer a TPZGeoMesh.
+//função que lê uma malha geométrica de um arquivo no formato Gmsh e retorna essa malha.
 void CreateBCs(TPZGeoMesh* gmesh);
-// Cria a função CreateBCs que não retorna valor, cuja entrada é o pointer para TPZGeoMesh.
+//Cria a função CreateBCs que não retorna valor, cuja entrada é o pointer para TPZGeoMesh.
+//função que cria condições de contorno na malha geométrica gmesh.
 TPZCompMesh* CreateH1CMesh(TPZGeoMesh* gmesh, const int pord, TElasticity3DAnalytic *elas);
-// CreateH1CMesh é uma função que retorna um pointer a TPZCompMesh, que tem os seguintes parâmetros:
+//CreateH1CMesh é uma função que cria uma malha computacional e que retorna um pointer a TPZCompMesh, que tem os seguintes parâmetros:
 //TPZGeoMesh* gmesh é um pointer para TPZGeoMesh
-// const int pord, é uma constante da variável inteira pord e, portanto, não pode ser alterada dentro da função
+//const int pord, é uma constante da variável inteira pord e, portanto, não pode ser alterada dentro da função
 //TElasticity3DAnalytic *elas é um pointer para TElasticity3DAnalytic
 void SolveProblemDirect(TPZLinearAnalysis &an, TPZCompMesh *cmesh);
-// Define a função do tipo void (Não retorna valor) SolveProblemDirect, que contém os seguintes parâmetros:
+//Define a função do tipo void (Não retorna valor) SolveProblemDirect, que contém os seguintes parâmetros:
 //TPZLinearAnalysis &an, é uma referência a função TPZLinearAnalysis denominada "an". Desse modo, quando essa referência, denominada "an", é alterada, o objeto original de onde ela foi retirada também será alterado, e não uma cópia desse objeto.
 //TPZCompMesh *cmesh é um pointer para um objeto do tipo TPZCompMesh.
 void PrintResults(TPZLinearAnalysis &an, TPZCompMesh *cmesh);
 //É definida a função PrintResults do tipo void, cujos parâmetros são os mesmos já explicados na linha anterior.
 
+//Essas funções serão detalhadas e suas funcionalidades serão expostas mais à frente.
 
 int main() {
     
@@ -80,26 +84,26 @@ int main() {
     //fProblemType recebe TElasticity3DAnalytic::EStretchx, um valor do tipo enum associado ao problema de elasticidade.
     TPZCompMesh* cmeshH1 = CreateH1CMesh(gmesh,pord,elas);
     // Define o pointer chamado cmeshH1 relacionado à classe TPZCompMesh, associando-o a função CreateH1CMesh, cujos parâmetros (já antes declarados) são: gmesh, pord, elas.
-    //
+    // Está detalhada mais à frente no código. Essa função cria uma malha computacional para resolver o problema de elasticidade tridimensional, define materiais, condições de contorno e constrói a malha com base nas configurações especificadas.
 
     TPZLinearAnalysis an(cmeshH1);
-// Nesse caso, a adição do termo "an" significa que estamos criando um objeto da classe "TPZLinearAnalysis", cujo nome é "an", e tal sintaxe é a de um constructor, inicializando com o objeto "an" com o argumento cmeshH1.
+    //um objeto da classe TPZLinearAnalysis chamado an é criado e associado à malha computacional cmeshH1 que foi previamente criada. A TPZLinearAnalysis é uma classe que faz análises lineares.
     SolveProblemDirect(an,cmeshH1);
-// A função SolveProblemDirect recebe dois parâmetros - an e cmeshH1. an é o objeto de referência recém criado, relacionado a TPZLinearAnalysis, enquanto que cmeshH1 é um pointer a um objeto de TPZCompMesh.
-    
-    // Post Process
+    //chama uma função chamada SolveProblemDirect para resolver o problema. A função recebe como argumentos o objeto an que representa a análise linear e a malha computacional cmeshH1 que contém as informações sobre o problema a ser resolvido.
+    //detalhadams a frene, basicamene configura a montagem e a resolução do sistema de equações para resolver o problema definido na malha computacional cmesh. Ela usa um solver direto Cholesky para resolver o sistema, paraleliza a montagem da matriz estrutural e mede o tempo gasto em cada etapa do processo.
     std::cout << "--------- PostProcess ---------" << std::endl;
-// Printa na tela "--------- PostProcess ---------"
+    //printa na tela "--------- PostProcess ---------", indicando que a simulação está em processamento.
     PrintResults(an,cmeshH1);
-// Define a função PrintResults, que recebe os mesmos parâmetros recém explicados,
+    //chama a função PrintResults para realizar o pós-processamento dos resultados. Essa função provavelmente gera saídas com os resultados da simulação.
     
     // deleting stuff
     delete cmeshH1;
+    //libera a memória associada à malha computacional cmeshH1 criada anteriormente. Isso é importante para evitar vazamento de memória.
     delete gmesh;
-// Como o comentário sugere, ambas as linhas acima são aplicadas para deletar os valores de cmeshH1 e gmesh, a fim de liberar espaço de memória de armazenamento, se livrando de dados que não serão mais utilizados.
+    //libera a memória associada à malha geométrica gmesh criada anteriormente.
         
     std::cout << "--------- Simulation finished ---------" << std::endl;
-// Printa na tela "--------- Simulation finished ---------"
+    //esta linha imprime uma mensagem indicando que a simulação foi concluída. "--------- Simulation finished ---------"
 }
 
 TPZGeoMesh* CreateGMesh(int ndiv) {
@@ -150,120 +154,111 @@ TPZCompMesh* CreateH1CMesh(TPZGeoMesh* gmesh, const int pord, TElasticity3DAnaly
     cmesh->SetAllCreateFunctionsContinuous();
     //o método SetAllCreateFunctionsContinuous() é chamado para configurar as funções de base a serem utilizadas na resolução do problema.
     
-    // Domain elas mat
     const STATE E = elas->fE, nu = elas->fPoisson;
-    //
+    //duas constantes E e nu são definidas. Essas constantes representam o módulo de elasticidade (E) e o coeficiente de Poisson (nu), que são propriedades do material elástico.
     TPZManVector<STATE> force = {0,0,0};
-    //
+    //um vetor chamado force é criado com três elementos iniciais igual a zero. Esse vetor representa as forças aplicadas no problema, mas no código atual, todas as forças são definidas como zero.
     TPZElasticity3D *mat = new TPZElasticity3D(EDomain, E, nu, force, 0., 0., 0.);
-    //
+    //criado um objeto mat da classe TPZElasticity3D, que representa o material elástico tridimensional. Ele recebe como argumentos o domínio (EDomain), o módulo de elasticidade E, o coeficiente de Poisson nu, o vetor de forças force, e valores iniciais de outros parâmetros que são todos definidos como zero.
     mat->SetExactSol(elas->ExactSolution(), 2);
-    //
+    //define a solução exata do problema no material mat. A solução exata é obtida a partir do objeto elas do tipo TElasticity3DAnalytic.
     mat->SetForcingFunction(elas->ForceFunc(), 4);
-    //
+    //define a função de força no material mat. A função de força é obtida do objeto elas do tipo TElasticity3DAnalytic.
     cmesh->InsertMaterialObject(mat);
-    //
+    //insere o material mat na malha computacional cmesh.
     
-    // BC null mat
     TPZFMatrix<STATE> val1(3,3,0.);
-//
     TPZManVector<STATE> val2(3,0.);
-//
+    //são definidas matrizes e vetores vazios que serão usados posteriormente na criação das condições de contorno.
     
     const int diri = 0, neu = 1, mixed = 2, normaltrac = 4;
-// Essa linha só define valores arbitrários para diversas variáveis, a fim de servirem como parâmetros a serem utilizados em outras funções.
+    //definidas algumas constantes para identificar os tipos de condições de contorno, como diri, neu, mixed, e normaltrac.
     auto* BCCond0 = mat->CreateBC(mat, EBC, diri, val1, val2);
-//
+    //cria uma condição de contorno (BCCond0) usando o método CreateBC do material mat. 
     BCCond0->SetForcingFunctionBC(elas->ExactSolution(), 4);
-//
+    //é definida uma função de força de condição de contorno usando elas->ExactSolution().
     cmesh->InsertMaterialObject(BCCond0);
-// Essa sintaxe chama o pointer cmesh e o associa a uma função denominada InsertMaterialObject, cujo parâmetro de entrada é BCCond0
+    //insere a condição de contorno BCCond0 na malha computacional cmesh.
     
-    // Constructs mesh
     cmesh->AutoBuild();
-// Essa linha de código "chama' a função AutoBuild dentro do objeto ao qual cmesh é pointer"
+    //este método é chamado para construir automaticamente a malha computacional com base nas configurações e objetos de material e condição de contorno definidos anteriormente.
     
     return cmesh;
-// Define como valor a ser retornado a variável cmesh, após concluir a função.
+    //a função retorna o ponteiro para a malha computacional cmesh
 }
 
 void SolveProblemDirect(TPZLinearAnalysis &an, TPZCompMesh *cmesh)
-// Declara a função SolveProblemDirect do tipo void (logo não retornará valor), com os seguintes parâmetros:
-//TPZLinearAnalysis &an, cuja sintaxe demonstra ser uma referência ao TPZLinearAnalysis chamada de an, a fim de se relacionar ao valor original, e não uma cópia dele.
-//TPZCompMesh *cmesh, cuja sintaxe é a de um pointer (chamado cmesh) relacionado a TPZCompMesh
+//Declara a função SolveProblemDirect do tipo void (logo não retornará valor).
 {
 
     TPZSkylineStructMatrix<STATE> matskl(cmesh);
-    // TPZSSpStructMatrix<STATE> matskl(cmesh);
+    //é criado um objeto matskl da classe TPZSkylineStructMatrix que representa a matriz estrutural do sistema de equações. O construtor TPZSkylineStructMatrix recebe a malha computacional cmesh como argumento.
     matskl.SetNumThreads(global_nthread);
-//
+    //define o número de threads que serão usadas para a montagem da matriz. A variável global_nthread provavelmente contém o número desejado de threads.
     an.SetStructuralMatrix(matskl);
-//
+    //associa a matriz estrutural matskl à análise linear an. Isso configura a matriz estrutural que será usada durante a resolução do problema.
     
-    ///Setting a direct solver
     TPZStepSolver<STATE> step;
-//
+    //cria um objeto step da classe TPZStepSolver que será usado como o solver para resolver o sistema de equações.
     step.SetDirect(ECholesky);//ELU //ECholesky // ELDLt
-//
+    //define o solver direto a ser utilizado. Neste caso, o solver direto Cholesky (ECholesky) é escolhido. O Cholesky é um método de fatoração LU que pode ser usado para resolver sistemas de equações lineares.
     an.SetSolver(step);
-//
+    //associa o solver step à análise linear an. Isso configura o solver que será usado durante a resolução do problema.
     
     //assembles the system
     std::cout << "--------- Assemble ---------" << std::endl;
-// printa a linha "--------- Assemble ---------"
+    //imprime "--------- Assemble ---------" indicando o início da montagem do sistema de equações.
     TPZSimpleTimer time_ass;
-//
+    //inicializa um temporizador para medir o tempo gasto na montagem do sistema.
     an.Assemble();
-//
+    //monta o sistema de equações usando a matriz estrutural e outras configurações previamente definidas. Esta é a etapa onde as contribuições de todos os elementos finitos são somadas para formar o sistema global de equações.
     std::cout << "Total time = " << time_ass.ReturnTimeDouble()/1000. << " s" << std::endl;
-// printa para o usuário a linha "Total time = (Valor resultante do cálculo de time_ass.ReturnTimeDouble()/1000.)s"
+    //imprime o tempo gasto na montagem do sistema.
 
-    
-    ///solves the system
     std::cout << "--------- Solve ---------" << std::endl;
-// printa a linha "--------- Solve ---------"
+    //printa "--------- Solve ---------" indicando o início da resolução do sistema de equações.
     TPZSimpleTimer time_sol;
-//
+    //inicializa um temporizador para medir o tempo gasto na resolução do sistema.
     an.Solve();
-//
+    //resolve o sistema de equações usando o solver direto configurado anteriormente.
     std::cout << "Total time = " << time_sol.ReturnTimeDouble()/1000. << " s" << std::endl;
-// printa para o usuário a linha "Total time = (Valor resultante do cálculo de time_sol.ReturnTimeDouble()/1000.)s"
+    //imprime o tempo gasto na resolução do sistema.
     
     return;
+    //a função é concluída e retorna.
 }
-
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 
 void PrintResults(TPZLinearAnalysis &an, TPZCompMesh *cmesh)
 //Define a função do tipo void chamada PrintResults, que recebe como parâmetros TPZLinearAnalysis &an e  TPZCompMesh *cmesh
 {
  
     std::cout << "--------- Post Process ---------" << std::endl;
-// printa para o usuário a linha "--------- Post Process ---------"
+    //printa para o usuário "--------- Post Process ---------" indicando o início da fase de pós-processamento. 
     TPZSimpleTimer postProc("Post processing time");
-// Declara uma variável chamada postProc, do tipo TPZSimpleTimer, chamando um construtor com uma string como argumento, igual a "Post processing time".
+    //declara uma variável chamada postProc, do tipo TPZSimpleTimer, chamando um construtor com uma string como argumento, igual a "Post processing time".
+    //inicializa um temporizador chamado postProc que será usado para medir o tempo gasto no pós-processamento.
     const std::string plotfile = "postprocess";
-// define a string plotfile, do tipo const, equivalente a uma string de texto "postprocess"
+    //define o nome base do arquivo de saída para o pós-processamento. O nome base é "postprocess".
     constexpr int vtkRes{0};
-// define a variável do tipo inteiro denominada vtkRes, do tipo constexpr, que significa que é uma expressão constante, ou seja,  vtkRes é um valor constante e não pode ser alterado. Ainda, {0} indica o valor associado a essa constante, e portanto não será alterado, com valor determinado na hora de compilação.
-    
+    //define a variável do tipo inteiro denominada vtkRes, do tipo constexpr, que significa que é uma expressão constante, ou seja,  vtkRes é um valor constante e não pode ser alterado. Ainda, {0} indica o valor associado a essa constante, e portanto não será alterado, com valor determinado na hora de compilação.
+    //define a resolução para o formato de arquivo VTK. Neste caso, a resolução é definida como 0, o que geralmente significa que a resolução será automática.
     TPZVec<std::string> fields = {
-        // "ExactDisplacement",
-        // "ExactStress",
         "Displacement",
         "Stress",
         "Strain",
     };
-// Nesse conjunto de linhas de código, temos que TPZVec é uma estrutura do tipo vetor que contém como argumento uma variável chamda "fields" que é uma lista de strings, que, pelo que se chamam, são relacionadas ao deslocamento, deformação e tensão. Além disso, mais duas strings estão no código porém como estão comentadas, devem ter sido o nome antigo dado a elas.
+    //nesse conjunto de linhas de código, temos que TPZVec é uma estrutura do tipo vetor que contém como argumento uma variável chamda "fields" que é uma lista de strings, que, pelo que se chamam, são relacionadas ao deslocamento, deformação e tensão.
+    //cria um vetor de strings chamado fields que contém os nomes dos campos que serão pós-processados. Neste caso, os campos incluem "Displacement" (deslocamento), "Stress" (tensão) e "Strain" (deformação). Esses campos representam propriedades do problema que desejamos visualizar após a simulação.
     auto vtk = TPZVTKGenerator(cmesh, fields, plotfile, vtkRes);
-// Essa linha de código declara uma variável chamada vtk do tipo auto, o que significa que o compilador irá deduzir o tipo que ela terá a depender do que ela é igual. No caso, ela é igual a função TPZVTKGenerator, de parâmetros cmesh, fields, plotfile, vtkRes.
+    //essa linha de código declara uma variável chamada vtk do tipo auto, o que significa que o compilador irá deduzir o tipo que ela terá a depender do que ela é igual. No caso, ela é igual a função TPZVTKGenerator, de parâmetros cmesh, fields, plotfile, vtkRes.
+    //cria um objeto vtk da classe TPZVTKGenerator, que é usado para gerar arquivos VTK a partir dos dados da malha computacional cmesh. Os argumentos passados para o construtor incluem a malha computacional, os campos a serem pós-processados, o nome base do arquivo de saída (plotfile) e a resolução VTK (vtkRes).
     vtk.SetNThreads(global_nthread);
-// Chama uma função "SetNThreads", de parâmetro "global_nthread" no objeto vtk. Desse modo, a função vtk realiza uma ação a partir da entrada fornecida que é a função SetNThreads, utilizando a estrutura de função do objeto vtk.
+    //define o número de threads a serem usadas durante o pós-processamento. A variável global_nthread provavelmente contém o número desejado de threads.
     vtk.Do();
-// Chama uma função chamada "Do" no objeto "vtk". Basicamente, representa uma ação que está relacionada a função vtk.
+    //inicia o processo de geração dos arquivos VTK. Esta função gera arquivos de saída contendo informações sobre os campos especificados na malha computacional.
     std::cout << "Total time = " << postProc.ReturnTimeDouble()/1000. << " s" << std::endl;
-// printa para o usuário a linha "Total time = (Valor resultante do cálculo de postProc.ReturnTimeDouble()/1000.)s"
+    //imprime o tempo gasto no pós-processamento, convertido para segundos.
     
     return;
+    //a função é concluída e retorna.
 }
