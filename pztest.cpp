@@ -30,6 +30,7 @@
 
 enum EMatid {ENone,EDomain,EBC};
 //TESTE DE COMMIT
+//TESTE 2
 //Cria a classe EMatid, que é do tipo enum, isso significa que ENone, EDomain e EBC são variáveis que não podem ter seu valor alterado diretamente, preservando-as em seu estado original relacionado a classe enum.
 const int global_nthread = 16;
 //define uma constante chamada global_nthread com o valor 16. Essa constante provavelmente é usada para controlar o número de threads usadas em operações de paralelismo, como na montagem da matriz estrutural ou no pós-processamento.
