@@ -37,7 +37,7 @@ const int global_nthread = 16;
 //define uma constante chamada global_nthread com o valor 16. Essa constante provavelmente é usada para controlar o número de threads usadas em operações de paralelismo, como na montagem da matriz estrutural ou no pós-processamento.
 
 TPZGeoMesh* CreateGMesh(int ndiv);
-//define a função CreateGMesh, que recebe um valor inteiro ndiv que é retornado como um pointer a TPZGeoMesh.
+//define a função CreateGMesh, que recebe um valor inteiro ndiv que é retornado como um pointer de TPZGeoMesh.
 //função que cria e retorna uma malha geométrica com base no número de divisões ndiv.
 TPZGeoMesh* ReadMeshFromGmsh(std::string file_name);
 //Analogamente, // Define a função ReadMeshFromGmsh, que recebe uma string relacionada ao nome de um arquivo, que é retornado como um pointer a TPZGeoMesh.
@@ -65,7 +65,7 @@ int main() {
     //printa o texto "--------- Starting simulation ---------", indicando que a simulação está se iniciando.
     const int pord = 1;
     //é declarada a constante pord, cujo valor inteiro atribuído é 1. essa variável provavelmente representa o grau dos polinômios usados para aproximar a solução dentro dos elementos finitos.
-    int ndiv = 2;
+    int ndiv = 10;
     //é declarada a variável ndiv (representa o número de divisões de cada uma das dimensões da malha), cujo valor inteiro atribuído é 2.
     TPZGeoMesh* gmesh = CreateGMesh(ndiv);
     //criação da váriável gmesh (geometric mesh) cujo valor será um ponteiro de um objeto da classe TPZGeoMesh, atribuído através da função CreateGMesh(ndiv), que recebe o valor de ndiv como entrada. 
@@ -79,11 +79,11 @@ int main() {
     TElasticity3DAnalytic *elas = new TElasticity3DAnalytic;
     //Uma variável chamada elas é declarada como um ponteiro para um objeto da classe TElasticity3DAnalytic. Em seguida, é criada uma instância dessa classe usando o operador new e o endereço do objeto é atribuído à variável elas.
     //TElasticity3DAnalytic é relacionada ao problema de elasticidade.
-    elas->fE = 250.;//206.8150271873455;
+    elas->fE = 250.0e6;//206.8150271873455;
     //Define o valor do atributo fE, pertencente ao objeto cujo pointer é elas, para 250, provavelmente antes era para 206.8150271873455 e tal valor foi alterado.
-    elas->fPoisson = 0.;
+    elas->fPoisson = 0.3;
     //Define o valor de fPoisson (outro atributo do objeto) para 0. (float)
-    elas->fProblemType = TElasticity3DAnalytic::EStretchx;
+    elas->fProblemType = TElasticity3DAnalytic::ELoadedBeam;
     //fProblemType recebe TElasticity3DAnalytic::EStretchx, um valor do tipo enum associado ao problema de elasticidade.
     TPZCompMesh* cmeshH1 = CreateH1CMesh(gmesh,pord,elas);
     // Define o pointer chamado cmeshH1 relacionado à classe TPZCompMesh, associando-o a função CreateH1CMesh, cujos parâmetros (já antes declarados) são: gmesh, pord, elas.
@@ -98,7 +98,8 @@ int main() {
     //printa na tela "--------- PostProcess ---------", indicando que a simulação está em processamento.
     PrintResults(an,cmeshH1);
     //chama a função PrintResults para realizar o pós-processamento dos resultados. Essa função provavelmente gera saídas com os resultados da simulação.
-    
+
+
     // deleting stuff
     delete cmeshH1;
     //libera a memória associada à malha computacional cmeshH1 criada anteriormente. Isso é importante para evitar vazamento de memória.
@@ -111,20 +112,20 @@ int main() {
 
 TPZGeoMesh* CreateGMesh(int ndiv) {
     //está sendo definida a função CreateGMesh que retornará um ponteiro para um objeto da classe TPZGeoMesh, a função recebe o argumento inteiro "ndiv".
-    TPZGeoMesh* gmesh = new TPZGeoMesh;
+    TPZGeoMesh* gmesh = nullptr;
     //gmesh é o endereço de um novo objeto criado pertencente à classe TPZGeoMesh.
     
-    MMeshType meshType = MMeshType::EHexahedral;
+    MMeshType meshType = MMeshType::ETetrahedral;
     //a variável meshType está recebendo o valor EHexahedral, indicando que os elementos da malha serão hexaédricos (cubos - 6 faces).
     int dim = 3;
     //variável "dim" é definida com valor inteiro 3 indicando que a malha será tridimensional.
-    TPZManVector<REAL,3> minX = {-1,-1,-1};
-    TPZManVector<REAL,3> maxX = {1,1,1};
+    TPZManVector<REAL,3> minX = {-20,-1,-1};
+    TPZManVector<REAL,3> maxX = {20,1,1};
     //Ambos os vetores "minX" e "maxX" possuem 3 elementos que indicam as coordenadas máximas e mínimas, respectivamente, da malha geométrica em cada uma das 3 dimensões.
     //Nesse caso, a caixa da malha geométrica vai de -1 a 1 nas 3 dimensões.
     //TPZManVector é uma classe utilizada para criar vetores desse tipo.
     int nMats = 2*dim+1;
-    // número de materiais talvez.
+    // número de materiais.
     
     constexpr bool createBoundEls{true};
     //é atribuído "true" à váriavel booleana "createBoundEls", indicando provavelmente que condições de contorno serão inseridas na malha.
@@ -159,7 +160,7 @@ TPZCompMesh* CreateH1CMesh(TPZGeoMesh* gmesh, const int pord, TElasticity3DAnaly
     
     const STATE E = elas->fE, nu = elas->fPoisson;
     //duas constantes E e nu são definidas. Essas constantes representam o módulo de elasticidade (E) e o coeficiente de Poisson (nu), que são propriedades do material elástico.
-    TPZManVector<STATE> force = {0,0,0};
+    TPZManVector<STATE> force = {0,0,-1.e6};
     //um vetor chamado force é criado com três elementos iniciais igual a zero. Esse vetor representa as forças aplicadas no problema, mas no código atual, todas as forças são definidas como zero.
     TPZElasticity3D *mat = new TPZElasticity3D(EDomain, E, nu, force, 0., 0., 0.);
     //criado um objeto mat da classe TPZElasticity3D, que representa o material elástico tridimensional. Ele recebe como argumentos o domínio (EDomain), o módulo de elasticidade E, o coeficiente de Poisson nu, o vetor de forças force, e valores iniciais de outros parâmetros que são todos definidos como zero.
