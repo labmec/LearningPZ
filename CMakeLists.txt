@@ -25,3 +25,7 @@ add_executable(pztest pztest.cpp)
 target_link_libraries(pztest PUBLIC NeoPZ::pz)
 #target_include_directories(pztest PUBLIC ${PZ_INCLUDE_DIRS})
 #target_include_directories(pztest PUBLIC ${CMAKE_SOURCE_DIR}/sources)
+
+add_executable(streamtracer streamtracer.cpp)
+target_link_libraries(streamtracer PUBLIC NeoPZ::pz)
+
